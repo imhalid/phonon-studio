@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  phonon-server:
+    image: ghcr.io/fermionresearch/phonon-cuda:1.0.3
+    container_name: phonon-server
+    command: ["serve", "--host", "0.0.0.0", "--port", "8000", "--api-key", "phonon-local", "--model", "phonon-2"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - phonon-cache:/root/.cache/phonon
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: cdi
+              device_ids: ["nvidia.com/gpu=all"]
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  phonon-studio:
+    build: .
+    container_name: phonon-studio
+    environment:
+      - PORT=3000
+      - PHONON_BACKEND_URL=http://phonon-server:8000
+      - PHONON_API_KEY=phonon-local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - phonon-server
+    restart: unless-stopped
+
+volumes:
+  phonon-cache:

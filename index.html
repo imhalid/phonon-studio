@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phonon Studio - Real-Time Speech Recognition</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="studio-wrapper">
+    <div class="studio-grid">
+      <!-- Left Panel: Input & Controls Sidebar -->
+      <aside class="studio-sidebar">
+        <header class="sidebar-header">
+          <div class="brand">
+            <h1>Phonon Studio</h1>
+            <span class="engine-tag">Phonon-2 CUDA GPU Acceleration</span>
+          </div>
+          <div class="status-badge" id="backendStatus">
+            <span class="dot"></span>
+            <span class="status-text">Connecting...</span>
+          </div>
+        </header>
+
+        <div class="sidebar-section">
+          <!-- Input Mode Switcher -->
+          <div class="tab-switcher">
+            <button class="tab-btn active" id="tabRecord">Live Microphone</button>
+            <button class="tab-btn" id="tabUpload">Upload File</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <!-- Teleprompter / Prompt Deck -->
+          <div class="prompt-card">
+            <div class="prompt-header">
+              <span class="prompt-tag">Reading Prompt</span>
+              <button class="shuffle-btn" id="shufflePromptBtn" title="Switch prompt">Shuffle</button>
+            </div>
+            <div class="prompt-text" id="samplePromptText">
+              "Artificial intelligence models are becoming smaller, faster, and more efficient every day."
+            </div>
+            <div class="prompt-chips" id="promptChips">
+              <button class="chip-btn active" data-index="0">Tech</button>
+              <button class="chip-btn" data-index="1">Meeting</button>
+              <button class="chip-btn" data-index="2">Standard</button>
+              <button class="chip-btn" data-index="3">Narrative</button>
+              <button class="chip-btn" data-index="4">Aviation</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section main-input-area">
+          <!-- Live Record Section -->
+          <section class="panel active" id="recordSection">
+            <div class="record-console">
+              <div class="live-indicator" id="liveIndicator" style="display: none;">
+                <span class="live-dot"></span> Live Stream Active
+              </div>
+              <div class="record-controls">
+                <button class="record-btn" id="recordBtn" title="Toggle recording">REC</button>
+                <div class="record-info">
+                  <div class="record-timer" id="recordTimer">00:00</div>
+                  <div class="record-status-label" id="recordStatusLabel">Click REC to start speaking</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- File Upload Section -->
+          <section class="panel" id="uploadSection">
+            <div class="drop-zone" id="dropZone">
+              <input type="file" id="fileInput" accept=".wav,.flac,.ogg,.aiff,.mp3,.m4a" hidden>
+              <div class="drop-zone-content">
+                <p class="drop-title">Drop audio file here or <span>browse</span></p>
+                <p class="drop-hint">WAV, FLAC, OGG, AIFF, MP3, M4A</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Audio Preview Card -->
+        <div class="audio-preview-card" id="audioPreviewCard" style="display: none;">
+          <div class="audio-info">
+            <div class="file-details">
+              <span class="file-name" id="previewFileName">recording.wav</span>
+              <span class="file-meta" id="previewFileMeta">0.0 MB</span>
+            </div>
+            <button class="clear-btn" id="clearAudioBtn" title="Clear audio">Clear</button>
+          </div>
+          <audio id="audioPlayer" controls></audio>
+        </div>
+
+        <!-- Action Button for Uploaded Files -->
+        <div class="action-bar" id="actionBar" style="display: none;">
+          <button class="transcribe-btn" id="transcribeBtn" disabled>
+            <span class="btn-spinner" id="btnSpinner" style="display: none;"></span>
+            <span id="transcribeBtnText">Transcribe File</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Right Panel: Full-Height Transcript Workspace -->
+      <main class="studio-workspace">
+        <header class="workspace-header">
+          <div class="workspace-meta">
+            <h2>Transcript Workspace</h2>
+            <div class="pills-group">
+              <span class="pill" id="elapsedBadge" style="display: none;">0.00s</span>
+              <span class="pill" id="wordCountBadge">0 words</span>
+            </div>
+          </div>
+          <div class="workspace-actions">
+            <button class="action-btn" id="clearTranscriptBtn" title="Clear text">Clear</button>
+            <button class="action-btn" id="exportBtn" title="Export as plain text">Export</button>
+            <button class="action-btn primary" id="copyBtn" title="Copy to clipboard" disabled>Copy</button>
+          </div>
+        </header>
+
+        <div class="workspace-content">
+          <div class="transcript-box" id="transcriptBox">
+            <p class="placeholder-text">Audio transcript will appear here in real time as you speak...</p>
+          </div>
+        </div>
+
+        <footer class="workspace-footer">
+          <div class="footer-item"><span>State:</span> <strong id="pipelineState">Idle</strong></div>
+          <div class="footer-item"><span>Pipeline:</span> <strong>16 kHz Mono Float32</strong></div>
+          <div class="footer-item"><span>Engine:</span> <strong>Phonon-2 (CUDA Graph TDT)</strong></div>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
